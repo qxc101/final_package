@@ -14,24 +14,17 @@
 #include <std_msgs/String.h>
 #include <std_srvs/Trigger.h>
 #include <trajectory_msgs/JointTrajectory.h>
-
-//Action server
 #include "actionlib/client/simple_action_client.h"
 #include "actionlib/client/terminal_state.h"
 // The Action Server “message type”
 #include "control_msgs/FollowJointTrajectoryAction.h"
-
-// Transformation header files
 #include "tf2_ros/transform_listener.h"
 #include "tf2_geometry_msgs/tf2_geometry_msgs.h"
 #include "geometry_msgs/TransformStamped.h"
 #include "geometry_msgs/PoseStamped.h"
-
 #include "ur_kinematics/ur_kin.h"
-#include "sensor_msgs/JointState.h" //header for retrieving current state of robot joints
-#include "trajectory_msgs/JointTrajectory.h" //header for generating a joint trajectory
-
-
+#include "sensor_msgs/JointState.h" 
+#include "trajectory_msgs/JointTrajectory.h" 
 class Final{
     public:
         ros::Publisher joint_trajectory_publisher_;
@@ -39,17 +32,12 @@ class Final{
         trajectory_msgs::JointTrajectory joint_trajectory_msg;
         actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction> *trajectory_as = new actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction>("ariac/arm/follow_joint_trajectory", true);
         
-        geometry_msgs::Pose agv1_position; //So that we can access the position of the tray agv1
-        
-        // Create the structure to populate for running the Action Server.
+        geometry_msgs::Pose agv1_position; 
         control_msgs::FollowJointTrajectoryAction joint_trajectory_as;
         
         explicit Final(ros::NodeHandle & n, tf2_ros::Buffer & tfBuffer) : has_been_zeroed_(false) {
             joint_trajectory_publisher_ = n.advertise<trajectory_msgs::JointTrajectory>("/ariac/arm/command", 10);
             order_received.resize(0);
-            
-            // Fill the names of the joints to be controlled.
-            // Note that the vacuum_gripper_joint is not controllable.
             joint_trajectory_msg.joint_names.clear();
             joint_trajectory_msg.header.frame_id = "/world";
             joint_trajectory_msg.joint_names.push_back("elbow_joint");
@@ -113,7 +101,7 @@ class Final{
                 //find the destination joint angles
                 int num_sols = ur_kinematics::inverse((double *)&T_des, (double *)&q_des);
                 if(num_sols == 0){
-                    ROS_WARN("No solutions found!!");
+                    
                     return;
                 }else{
                     // ROS_INFO("Solutions calculated!");
