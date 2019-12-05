@@ -1,0 +1,4 @@
+<launch>
+    <node pkg="final_package" name = "final_package_node" type="final_package_node" output="screen"/>
+</launch>
+
